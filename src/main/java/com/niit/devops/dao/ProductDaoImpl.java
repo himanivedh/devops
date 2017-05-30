@@ -1,0 +1,50 @@
+package com.niit.devops.dao;
+
+import java.util.List;
+
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import com.niit.devops.model.Product;
+
+@Repository
+public class ProductDaoImpl implements ProductDao {
+	@Autowired
+private SessionFactory sessionFactory;
+	public void saveOrUpdateProduct(Product product) {
+		Session session=sessionFactory.openSession();
+		System.out.println("PRODUCT ID BEFORE INSERTION " + product.getId());
+		session.save(product);
+		System.out.println("PRODUCT ID AFTER INSERTION " + product.getId());
+		session.flush();
+		session.close();
+	}
+	@Override
+	public List<Product> getAllProducts() {
+		Session  session=sessionFactory.openSession();
+		Query query=session.createQuery("from Product");
+		List<Product> products=query.list();
+		session.close();
+		return products;
+
+	}
+	@Override
+	public Product getProductById(int id) {
+		Session session=sessionFactory.openSession();
+        Product product=(Product)session.get(Product.class, id);
+        session.close();
+        return product;
+	}
+	@Override
+	public void deleteProduct(int id) {
+		Session session=sessionFactory.openSession();
+		Product product=(Product)session.get(Product.class, id); //persistent
+		session.delete(product);
+		session.flush();
+		session.close();
+	}
+
+}
